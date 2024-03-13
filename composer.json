@@ -1,0 +1,20 @@
+{
+    "name": "geldiyeff/fileutility",
+    "description": "The class for PHP that allows file operations to be performed with a single function.",
+    "type": "library",
+    "require": {
+        "php": ">=7.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Geldiyeff\\Fileutility\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "geldiyeff",
+            "email": "imdvlt39@gmail.com"
+        }
+    ]
+}
