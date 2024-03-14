@@ -60,6 +60,33 @@ $fileUtility = new YourClassUsingFileUtility();
 $files = $fileUtility->getFiles('/path/to/directory', 'txt');
 ```
 
+#### `ZipExtract(string $zipFile, string $extractTo): bool`
+
+Extracts files from a ZIP archive.
+
+```php
+$fileUtility = new YourClassUsingFileUtility();
+$success = $fileUtility->ZipExtract('/path/to/archive.zip', '/path/to/extract');
+```
+
+#### `ZipCreate(string $zipFile, array $files): bool`
+
+Creates a new ZIP archive and adds specified files.
+
+```php
+$fileUtility = new YourClassUsingFileUtility();
+$success = $fileUtility->ZipCreate('/path/to/new-archive.zip', ['/path/to/file1.txt', '/path/to/file2.txt']);
+```
+
+#### `ZipAdd(string $zipFile, array $files): bool`
+
+Adds files to an existing ZIP archive.
+
+```php
+$fileUtility = new YourClassUsingFileUtility();
+$success = $fileUtility->ZipAdd('/path/to/archive.zip', ['/path/to/newfile.txt', '/path/to/anotherfile.txt']);
+```
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
