@@ -1,5 +1,9 @@
 # FileUtility PHP Trait
 
+[![Latest Stable Version](https://poser.pugx.org/geldiyeff/fileutility/v/stable.svg)](https://packagist.org/packages/geldiyeff/fileutility)
+[![License](https://poser.pugx.org/geldiyeff/fileutility/license.svg)](https://packagist.org/packages/geldiyeff/fileutility)
+[![Total Downloads](https://poser.pugx.org/geldiyeff/fileutility/downloads)](https://packagist.org/packages/geldiyeff/fileutility)
+
 The **FileUtility** trait is a PHP trait that provides methods for handling JSON files, directories, and retrieving files based on file type.
 
 ## Installation
@@ -85,6 +89,15 @@ Adds files to an existing ZIP archive.
 ```php
 $fileUtility = new YourClassUsingFileUtility();
 $success = $fileUtility->ZipAdd('/path/to/archive.zip', ['/path/to/newfile.txt', '/path/to/anotherfile.txt']);
+```
+
+#### `saveFile(string $filePath, string $data): bool`
+
+Saves data to a specified file path.
+
+```php
+$fileUtility = new YourClassUsingFileUtility();
+$success = $fileUtility->saveFile('/path/to/file.txt', 'Some data to be saved.');
 ```
 
 ## License

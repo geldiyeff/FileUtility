@@ -37,6 +37,20 @@ trait FileUtility
     }
 
     /**
+     * Saves data to a specified file path.
+     *
+     * This method writes the provided data to the specified file path.
+     *
+     * @param string $filePath The path where the data will be saved.
+     * @param string $data The data to be saved.
+     * @return bool Returns true if the data was successfully saved, false otherwise.
+     */
+    public function saveFile(string $filePath, string $data): bool
+    {
+        return file_put_contents($filePath, $data) !== false;
+    }
+
+    /**
      * Creates a directory at the specified path if it does not already exist.
      *
      * @param string $path The path of the directory to be created.
