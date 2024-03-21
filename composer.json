@@ -2,7 +2,7 @@
     "name": "geldiyeff/fileutility",
     "description": "The class for PHP that allows file operations to be performed with a single function.",
     "type": "library",
-    "version": "2.1.0",
+    "version": "1.2.0",
     "require": {
         "php": ">=7.0"
     },
