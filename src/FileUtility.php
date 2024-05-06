@@ -18,8 +18,23 @@ trait FileUtility
      */
     public function loadJsonFile(string $filePath): ?array
     {
+        // Check if the file exists
+        if (!file_exists($filePath)) {
+            return null;
+        }
+
+        // Read JSON content from the file
         $jsonContent = file_get_contents($filePath);
-        return json_decode($jsonContent, true);
+
+        // Decode JSON content
+        $data = json_decode($jsonContent, true);
+
+        // Check for decoding errors
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return null;
+        }
+
+        return $data;
     }
 
     /**
@@ -32,8 +47,34 @@ trait FileUtility
      */
     public function saveJsonFile(string $filePath, array $data): bool
     {
-        $jsonContent = json_encode($data, JSON_PRETTY_PRINT);
+        // Encode data as JSON with pretty-printing and unicode support
+        $jsonContent = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+        // Check if encoding was successful
+        if ($jsonContent === false) {
+            return false;
+        }
+
+        // Create directory if it doesn't exist
+        $this->makeDir(dirname($filePath));
+
+        // Write JSON content to the file
         return file_put_contents($filePath, $jsonContent) !== false;
+    }
+
+    /**
+     * Creates a directory at the specified path if it does not already exist.
+     *
+     * @param string $path The path of the directory to be created.
+     *
+     * @return void
+     */
+    public function makeDir(string $path): void
+    {
+        // Check if the directory doesn't exist, then create it
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
     }
 
     /**
@@ -47,21 +88,35 @@ trait FileUtility
      */
     public function saveFile(string $filePath, string $data): bool
     {
-        return file_put_contents($filePath, $data) !== false;
-    }
-
-    /**
-     * Creates a directory at the specified path if it does not already exist.
-     *
-     * @param string $path The path of the directory to be created.
-     *
-     * @return void
-     */
-    public function makeDir(string $path): void
-    {
-        if (!file_exists($path)) {
-            mkdir($path, 0777, true);
+        // Check if the file path is empty
+        if (empty($filePath)) {
+            return false;
         }
+
+        // Create directory if it doesn't exist
+        $directory = dirname($filePath);
+        $this->makeDir($directory);
+
+        // Check if directory is writable
+        if (!is_writable($directory)) {
+            return false;
+        }
+
+        // Determine flags based on file existence
+        $flags = 0;
+        if (file_exists($filePath)) {
+            $flags = FILE_APPEND;
+        }
+
+        // Write data to the file
+        $result = file_put_contents($filePath, $data, $flags);
+
+        // Check if writing was successful
+        if ($result === false) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -74,21 +129,21 @@ trait FileUtility
      */
     public function getFiles(string $path, string $fileType = "*"): ?array
     {
+        // Scan directory for files
         $files = scandir($path);
         $files = array_diff($files, array('.', '..'));
 
         $result = [];
 
+        // Iterate over files
         foreach ($files as $file) {
             if (is_dir($path . '/' . $file)) {
+                // Recursively call getFiles for directories
                 $result = array_merge($result, $this->getFiles($path . '/' . $file, $fileType));
             } else {
-                if ($fileType === "*") {
+                // Add file to result if file type matches or all types are allowed
+                if ($fileType === "*" || pathinfo($file, PATHINFO_EXTENSION) === $fileType) {
                     $result[] = $path . '/' . $file;
-                } else {
-                    if (pathinfo($file, PATHINFO_EXTENSION) === $fileType) {
-                        $result[] = $path . '/' . $file;
-                    }
                 }
             }
         }
@@ -105,6 +160,7 @@ trait FileUtility
      */
     public function removeFiles(array $files): bool
     {
+        // Iterate over files and remove them
         foreach ($files as $file) {
             if (file_exists($file)) {
                 unlink($file);
@@ -123,12 +179,24 @@ trait FileUtility
      */
     public function zipExtract(string $zipFile, string $extractTo): bool
     {
+        // Check if the ZIP archive file exists and is readable
+        if (!file_exists($zipFile) || !is_readable($zipFile)) {
+            return false;
+        }
+
+        // Create extraction directory if it doesn't exist
+        $this->makeDir($extractTo);
+
+        // Open the ZIP archive
         $zip = new ZipArchive;
-        if ($zip->open($zipFile) === TRUE) {
-            $zip->extractTo($extractTo);
+        if ($zip->open($zipFile) === true) {
+            // Extract files from the ZIP archive
+            $extractResult = $zip->extractTo($extractTo);
             $zip->close();
-            return true;
+
+            return $extractResult;
         } else {
+            // Unable to open the ZIP archive
             return false;
         }
     }
@@ -143,14 +211,17 @@ trait FileUtility
      */
     public function zipCreate(string $zipFile, array $files): bool
     {
+        // Create a new ZIP archive
         $zip = new ZipArchive;
-        if ($zip->open($zipFile, ZipArchive::CREATE) === TRUE) {
+        if ($zip->open($zipFile, ZipArchive::CREATE) === true) {
+            // Add files to the ZIP archive
             foreach ($files as $file) {
                 $zip->addFile($file);
             }
             $zip->close();
             return true;
         } else {
+            // Unable to create the ZIP archive
             return false;
         }
     }
@@ -165,14 +236,17 @@ trait FileUtility
      */
     public function zipAdd(string $zipFile, array $files): bool
     {
+        // Open the existing ZIP archive
         $zip = new ZipArchive;
-        if ($zip->open($zipFile) === TRUE) {
+        if ($zip->open($zipFile) === true) {
+            // Add files to the ZIP archive
             foreach ($files as $file) {
                 $zip->addFile($file);
             }
             $zip->close();
             return true;
         } else {
+            // Unable to open the ZIP archive
             return false;
         }
     }
